@@ -12,3 +12,51 @@ div#players {
   border-radius: 8px;
   flex-direction: column;
 }
+
+.hand {
+  display: flex;
+  position: relative;
+}
+
+.hand-message {
+  position: absolute;
+  background: #ffffffdd;
+  padding: 10px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 75%;
+  text-align: center;
+  border: 2px solid black;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  width: 30px;
+  padding: 5px;
+  background-color: white;
+  margin: 2px;
+  border-radius: 6px;
+  align-items: center;
+}
+
+.card.red {
+  color: red;
+}
+
+.card.hidden {
+  background-color: rgb(196, 196, 196);
+}
+
+.player-header {
+  display: flex;
+  position: relative;
+  justify-content: space-between;
+}
+
+.player-value {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}

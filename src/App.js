@@ -1,26 +1,49 @@
 import React, { useState, createContext } from 'react';
+import uuid4 from 'uuid4';
 
 import Player from './components/Player';
 
 import './App.css';
 
-function App() {
-  const TableContext = createContext();
+export const TableContext = createContext({
+  deck: [],
+  setDeck: () => {},
+  players: [],
+  setPlayers: () => {},
+  hands: [],
+  setHands: () => {},
+  activeHand: '',
+  setActiveHand: () => {},
+});
 
+function App() {
   const [players, setPlayers] = useState([
     createPlayer('Dealer'),
     createPlayer('Chris'),
   ]);
 
-  const [activePlayer, setActivePlayer] = useState('Chris');
+  const [activeHand, setActiveHand] = useState('');
   const [deck, setDeck] = useState(createDeck());
   const [newPlayerName, setNewPlayerName] = useState('');
   const [nameError, setNameError] = useState('');
-
-  console.log(players);
+  const [hands, setHands] = useState([]);
 
   return (
-    <TableContext.Provider value={{ deck, setDeck, players, setPlayers }}>
+    <TableContext.Provider
+      value={{
+        deck,
+        setDeck,
+        players,
+        setPlayers,
+        hands,
+        setHands,
+        activeHand,
+        setActiveHand,
+      }}
+    >
+      <button onClick={() => deal(players, setDeck, setHands, setActiveHand)}>
+        Deal
+      </button>
       <div id="dealer">
         <Player data={players[0]} />
       </div>
@@ -69,16 +92,61 @@ function createDeck() {
   return deck;
 }
 
+function createHand(player, deck, hands) {
+  let newDeck = [...deck];
+  const firstCard = newDeck[Math.floor(Math.random() * newDeck.length)];
+  newDeck = newDeck.filter((c) => c != firstCard);
+  const secondCard = newDeck[Math.floor(Math.random() * newDeck.length)];
+  newDeck = newDeck.filter((c) => c != secondCard);
+
+  const newHand = {
+    id: uuid4(),
+    playerId: player.id,
+    cards: [firstCard, secondCard],
+    result: { message: '' },
+    get value() {
+      let ace = false;
+      let total = 0;
+      this.cards.forEach((c) => {
+        let v = c.value;
+        if (v === 'A') {
+          ace = true;
+          v = 1;
+        }
+        if (v === 'K' || v === 'Q' || v === 'J') v = 10;
+        total += v;
+      });
+      if (ace && total < 12) total += 10;
+      return total;
+    },
+  };
+
+  return { hands: [...hands, newHand], deck: newDeck };
+}
+
 function createPlayer(name) {
   return {
+    id: uuid4(),
     name,
-    hand: [],
-    get value() {
-      return '0';
-    },
-    stage: 'ready',
-    money: 0,
+    value: 0,
+    bet: 1,
   };
+}
+
+function deal(players, setDeck, setHands, setActiveHand) {
+  let newDeck = createDeck();
+  let newHands = [];
+
+  players.forEach((p) => {
+    console.log(p.name);
+    const result = createHand(p, newDeck, newHands);
+    newDeck = result.deck;
+    newHands = result.hands;
+  });
+
+  setDeck(newDeck);
+  setHands(newHands);
+  setActiveHand(newHands[1].id);
 }
 
 function handleNewPlayer(
@@ -92,6 +160,9 @@ function handleNewPlayer(
   e.preventDefault();
   if (players.find((p) => p.name === newPlayerName))
     return setNameError('Player already exists');
+
+  if (newPlayerName.length < 3)
+    return setNameError('Player name must be at least 3 characters');
 
   const newPlayers = [...players, createPlayer(newPlayerName)];
   setNewPlayerName('');
