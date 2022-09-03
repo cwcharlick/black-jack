@@ -19,8 +19,6 @@ function Player({ data }) {
 
   const myHands = hands.filter((h) => h.playerId == id);
 
-  console.log(name, myHands, activeHand);
-
   return (
     <div className="player">
       <div className="player-header">

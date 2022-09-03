@@ -1,3 +1,8 @@
+//next:
+//Dealer turn (animated?)
+//tally up results
+//game-loop. Cant deal / add & remove players until game over.
+
 import React, { useState, createContext } from 'react';
 import uuid4 from 'uuid4';
 
@@ -104,6 +109,7 @@ function createHand(player, deck, hands) {
     playerId: player.id,
     cards: [firstCard, secondCard],
     result: { message: '' },
+    bet: player.bet,
     get value() {
       let ace = false;
       let total = 0;
@@ -138,7 +144,6 @@ function deal(players, setDeck, setHands, setActiveHand) {
   let newHands = [];
 
   players.forEach((p) => {
-    console.log(p.name);
     const result = createHand(p, newDeck, newHands);
     newDeck = result.deck;
     newHands = result.hands;

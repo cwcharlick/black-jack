@@ -2,7 +2,10 @@ div#players {
   display: flex;
   flex-direction: column;
 }
-
+.disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}
 .player {
   display: flex;
   width: 300px;
