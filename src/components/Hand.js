@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import uuid4 from 'uuid4';
 
 import { TableContext } from '../App';
@@ -14,7 +14,25 @@ function Hand({ hand, dealer }) {
     setHands,
     activeHand,
     setActiveHand,
+    playing,
+    setPlaying,
+    totals,
   } = useContext(TableContext);
+  const player = players.find((p) => p.id === hand.playerId);
+
+  useEffect(() => {
+    console.log(player.name, hand.playerId, activeHand);
+
+    if (player.name != 'Dealer' || hand.id != activeHand || !playing) return;
+    if (hand.value > 16) {
+      setPlaying(false);
+      totals(hands, setHands, players, setPlayers);
+      return;
+    }
+    const { newDeck, newHands } = draw(deck, hands, hand);
+    setDeck(newDeck);
+    setHands(newHands);
+  }, [activeHand, hand.cards.length]);
 
   let canSplit = false;
   if (hand.cards.length === 2) {
@@ -74,7 +92,9 @@ function Hand({ hand, dealer }) {
             <Card
               data={c}
               key={i}
-              hidden={dealer && i === 0 ? true : undefined}
+              hidden={
+                dealer && i === 0 && hand.id != activeHand ? true : undefined
+              }
             />
           );
         })}
@@ -82,7 +102,7 @@ function Hand({ hand, dealer }) {
           <div className="hand-message">{hand.result.message}</div>
         )}
       </div>
-      {hand.id === activeHand && controls}
+      {player.name != 'Dealer' && hand.id === activeHand && controls}
     </>
   );
 }

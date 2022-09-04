@@ -1,9 +1,7 @@
 //next:
-//Dealer turn (animated?)
-//tally up results
-//game-loop. Cant deal / add & remove players until game over.
+// dealer / player 21
 
-import React, { useState, createContext } from 'react';
+import React, { useState, createContext, useEffect } from 'react';
 import uuid4 from 'uuid4';
 
 import Player from './components/Player';
@@ -19,6 +17,9 @@ export const TableContext = createContext({
   setHands: () => {},
   activeHand: '',
   setActiveHand: () => {},
+  playing: '',
+  setPlayer: () => {},
+  totals: () => {},
 });
 
 function App() {
@@ -32,6 +33,7 @@ function App() {
   const [newPlayerName, setNewPlayerName] = useState('');
   const [nameError, setNameError] = useState('');
   const [hands, setHands] = useState([]);
+  const [playing, setPlaying] = useState(false);
 
   return (
     <TableContext.Provider
@@ -44,9 +46,16 @@ function App() {
         setHands,
         activeHand,
         setActiveHand,
+        playing,
+        setPlaying,
+        totals,
       }}
     >
-      <button onClick={() => deal(players, setDeck, setHands, setActiveHand)}>
+      <button
+        onClick={() =>
+          deal(players, setDeck, setHands, setActiveHand, setPlaying)
+        }
+      >
         Deal
       </button>
       <div id="dealer">
@@ -139,7 +148,8 @@ function createPlayer(name) {
   };
 }
 
-function deal(players, setDeck, setHands, setActiveHand) {
+function deal(players, setDeck, setHands, setActiveHand, setPlaying) {
+  setPlaying(true);
   let newDeck = createDeck();
   let newHands = [];
 
@@ -175,4 +185,34 @@ function handleNewPlayer(
   setNameError('');
 }
 
+function totals(hands, setHands, players, setPlayers) {
+  const dealer = players.find((p) => p.name === 'Dealer');
+  const dealersHand = hands.find((h) => h.playerId === dealer.id);
+
+  for (let i = 0; i < hands.length; i++) {
+    const player = players.find((p) => p.id === hands[i].playerId);
+    if (player.name === 'Dealer') continue;
+    let win = false;
+    if (
+      hands[i].value < 22 &&
+      (hands[i].value > dealersHand.value || dealersHand.value > 21)
+    )
+      win = true;
+
+    if (win) {
+      player.value += hands[i].bet;
+      dealer.value -= hands[i].bet;
+      hands[i].result.status = 'won';
+      hands[i].result.message = `Won £${hands[i].bet}`;
+    } else {
+      player.value -= hands[i].bet;
+      dealer.value += hands[i].bet;
+      hands[i].result.status = 'lost';
+      hands[i].result.message = `Lost £${hands[i].bet}`;
+    }
+  }
+
+  setPlayers([...players]);
+  setHands([...hands]);
+}
 export default App;
