@@ -1,7 +1,7 @@
 //next:
 // dealer / player 21
 
-import React, { useState, createContext, useEffect } from 'react';
+import React, { useState, createContext } from 'react';
 import uuid4 from 'uuid4';
 
 import Player from './components/Player';
@@ -58,14 +58,6 @@ function App() {
       >
         Deal
       </button>
-      <div id="dealer">
-        <Player data={players[0]} />
-      </div>
-      <div id="players">
-        {players.map(
-          (p, i) => p.name != 'Dealer' && <Player data={p} key={i} />
-        )}
-      </div>
       <form
         onSubmit={(e) =>
           handleNewPlayer(
@@ -88,6 +80,14 @@ function App() {
         <button type="Submit">Add</button>
       </form>
       {nameError}
+      <div id="dealer">
+        <Player data={players[0]} />
+      </div>
+      <div id="players">
+        {players.map(
+          (p, i) => p.name != 'Dealer' && <Player data={p} key={i} />
+        )}
+      </div>
     </TableContext.Provider>
   );
 }

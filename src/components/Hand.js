@@ -21,8 +21,6 @@ function Hand({ hand, dealer }) {
   const player = players.find((p) => p.id === hand.playerId);
 
   useEffect(() => {
-    console.log(player.name, hand.playerId, activeHand);
-
     if (player.name != 'Dealer' || hand.id != activeHand || !playing) return;
     if (hand.value > 16) {
       setPlaying(false);
@@ -141,7 +139,6 @@ function split(hand, hands, setHands) {
   secondHand.id = uuid4();
 
   newHands.splice(index + 1, 0, secondHand);
-  console.log(hands, newHands);
   setHands(newHands);
 }
 

@@ -23,8 +23,10 @@ function Player({ data }) {
     <div className="player">
       <div className="player-header">
         <div className="player-name">{name}</div>
-        <div className="player-value">Bank: {value}</div>
-        <div className="player-bet">Bet: £{bet}</div>
+        <div className={value < 0 ? 'player-value danger' : 'player-value'}>
+          Bank: {value >= 0 ? `£${value}` : `-£${value * -1}`}
+        </div>
+        {name != 'Dealer' && <div className="player-bet">Bet: £{bet}</div>}
       </div>
       <div className="player-hands">
         {myHands.map((h) => (

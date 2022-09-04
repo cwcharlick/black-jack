@@ -2,6 +2,9 @@ div#players {
   display: flex;
   flex-direction: column;
 }
+.danger {
+  color: orange;
+}
 .disabled {
   pointer-events: none;
   opacity: 0.5;
